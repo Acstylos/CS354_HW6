@@ -105,7 +105,8 @@ print("Total:\t\t{}\nTraining:\t{}\nValidation:\t{}\nTest:\t\t{}"
               len(training_data), len(validation_data), len(test_data)))
 
 
-# ***** DO ANN Stuff Below Here *****
+# ***** Do ANN Training and Prediction *****
+# we need to "reshape" our data for Keras input
 data_train = np.asarray(list(image.image.flat_image for image 
                              in training_data))
 label_train = np.asarray(list(image.label.one_hot for image in training_data))
@@ -114,7 +115,6 @@ data_valid = np.asarray(list(image.image.flat_image for image
 label_valid = np.asarray(list(image.label.one_hot for image 
                               in validation_data))
 data_test = np.asarray(list(image.image.flat_image for image in test_data))
-label_test = np.asarray(list(image.label.one_hot for image in test_data))
 
 # declare model - don't change this
 model = Sequential()
@@ -123,10 +123,12 @@ model = Sequential()
 # 1. initializing weights randomly for every layer
 # 2. Using ReLu, SeLu, and Tanh activation units
 # 3. number of layers and neurons per layer (including the first)
-# first layer
 
+# first layer (technically I think this is hidden/middle 1, and first 
+# layer is actually a mock copy of the training data)
 model.add(Dense(64, input_shape=(Image._image_size,), 
                 kernel_initializer='glorot_normal', activation='relu'))
+# mid layers                
 model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
 model.add(Dense(64, kernel_initializer='glorot_normal', activation='relu'))
 model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
@@ -138,20 +140,21 @@ model.add(Dense(10, kernel_initializer='he_normal', activation='softmax'))
 # Compile Model - don't change this
 model.compile(optimizer='sgd', loss='categorical_crossentropy', 
               metrics=['accuracy'])
-#model.summary()
+# debug usage
+# model.summary()
+
 # Train Model
 history = model.fit(data_train, label_train, 
                     validation_data = (data_valid, label_valid), 
-                    epochs=training_epochs, 
-                    batch_size=training_batch_size)
+                    epochs=training_epochs, batch_size=training_batch_size)
 # Report Results
-#print(history.history)
-
+# debug usage
+# print(history.history)
 predictions = model.predict(data_test)
 testing_results = []
 k = 0
 for prediction in predictions:
-    # we can use argmax to get the index of the highest propbability, 
+    # we can use argmax to get the index of the highest probability, 
     # which should translate directly into predicted class, since class
     # is sorted by number, which automatically corresponds to the index
     predicted_class = np.argmax(prediction)
