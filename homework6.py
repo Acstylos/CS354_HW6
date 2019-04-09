@@ -9,8 +9,6 @@ from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Activation
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.datasets import load_iris
-from sklearn.model_selection import cross_val_score
 from data_objects import (LabeledImage, Image, Label, ConfusionMatrix,  
                           TestingResult)
 
@@ -115,7 +113,7 @@ for classification, images in class_image_dictionary.items():
                             len(validation_subset)/total_length, 
                             len(test_subset), 
                             len(test_subset)/total_length))
-log("\nTotal:\t\t{}\nTraining:\t{}\nValidation:\t{}\nTest:\t\t{}"
+log("\nTotal:\t\t{}\nTraining:\t{}\nValidation:\t{}\nTest:\t\t{}\n\n"
       .format(len(training_data)+len(validation_data)+len(test_data), 
               len(training_data), len(validation_data), len(test_data)))
 
@@ -163,13 +161,13 @@ history = model.fit(data_train, label_train,
                     validation_data = (data_valid, label_valid), 
                     epochs=training_epochs, batch_size=training_batch_size)
 # Report Results
-# debug usage
-#log(history.history)
-log("\n\nKeras Neural Network Accuracy: {:.6f}"
+# Use history data to graph performance of ANN over each epoch
+log(str(history.history))
+log("\n\nKeras Training Neural Network Accuracy: {:.6f}"
     .format(history.history.get('acc')[-1]))
 predictions = model.predict(data_test)
 confusion_matrix = ConfusionMatrix(predictions, test_data, classifications)
-log("\n\nCalc'd Neural Network Accuracy: {:.6f}"
+log("\n\nTested Neural Network Accuracy: {:.6f}"
     .format(confusion_matrix.get_accuracy()))
 log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 
@@ -180,13 +178,24 @@ baseline_classifier = baseline_classifier.fit(data_train, label_train)
 baseline_tree_prediction = baseline_classifier.predict(data_test)
 baseline_tree_confusion_matrix = ConfusionMatrix(baseline_tree_prediction, 
                                                  test_data, classifications)
-log("\n\nCalc'd Baseline Tree Accuracy: {:.6f}"
+log("\n\nTested Baseline Tree Accuracy: {:.6f}"
     .format(baseline_tree_confusion_matrix.get_accuracy()))
 log("\nBaseline Tree Confusion Matrix:\n{}"
     .format(baseline_tree_confusion_matrix))
 
 # ***** Variation Decision Tree *****
-
+variation_classifier = DecisionTreeClassifier(max_depth=12, 
+                                              min_samples_leaf=2, 
+                                              max_leaf_nodes=128,
+                                              criterion='entropy')
+variation_classifier = variation_classifier.fit(data_train, label_train)
+variation_tree_prediction = variation_classifier.predict(data_test)
+variation_tree_confusion_matrix = ConfusionMatrix(variation_tree_prediction, 
+                                                 test_data, classifications)
+log("\n\nTested Variation Tree Accuracy: {:.6f}"
+    .format(variation_tree_confusion_matrix.get_accuracy()))
+log("\nVariation Tree Confusion Matrix:\n{}"
+    .format(variation_tree_confusion_matrix))
 
 # ***** Hand-Engineered Features Decision Tree *****
 
