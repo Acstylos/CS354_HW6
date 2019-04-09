@@ -5,10 +5,12 @@ import copy
 import random
 import contextlib
 
-
 from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Activation
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import cross_val_score
 from data_objects import (LabeledImage, Image, Label, ConfusionMatrix,  
                           TestingResult)
 
@@ -40,10 +42,23 @@ def log(message):
     with open(output_filename, "a") as output_file:
         output_file.write(message)
 
+def generate_confusion_matrix(predictions, test_data, classifications):
+    testing_results = []
+    x = 0
+    for prediction in predictions:
+        # we can use argmax to get the index of the highest probability, 
+        # which should translate directly into predicted class, since class
+        # is sorted by number, which automatically corresponds to the index
+        predicted_class = np.argmax(prediction)
+        expected_class = test_data[x].label.classification
+        test_result = TestingResult(predicted_class, expected_class)
+        testing_results.append(test_result)
+        x += 1
+    return ConfusionMatrix(testing_results, classifications)
+
 # remove previous output file
 with contextlib.suppress(FileNotFoundError):
     os.remove(output_filename)
-    
 
 # ***** Load Data Files *****
 # size of each nparray should be the same once converted into individual
@@ -165,17 +180,24 @@ history = model.fit(data_train, label_train,
 # debug usage
 # print(history.history)
 predictions = model.predict(data_test)
-testing_results = []
-k = 0
-for prediction in predictions:
-    # we can use argmax to get the index of the highest probability, 
-    # which should translate directly into predicted class, since class
-    # is sorted by number, which automatically corresponds to the index
-    predicted_class = np.argmax(prediction)
-    expected_class = test_data[k].label.classification
-    test_result = TestingResult(predicted_class, expected_class)
-    testing_results.append(test_result)
-    k += 1
+confusion_matrix = generate_confusion_matrix(predictions, test_data, 
+                                             classifications)
+log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 
-confusion_matrix = ConfusionMatrix(testing_results, classifications)
-log("\nConfusion Matrix:\n{}".format(confusion_matrix))
+
+# ***** Baseline Decision Tree *****
+baseline_classifier = DecisionTreeClassifier()
+baseline_classifier = baseline_classifier.fit(data_train, label_train)
+baseline_tree_prediction = baseline_classifier.predict(data_test)
+baseline_tree_confusion_matrix = generate_confusion_matrix(
+                                    baseline_tree_prediction, 
+                                    test_data, classifications)
+log("\nBaseline Tree Confusion Matrix:\n{}"
+    .format(baseline_tree_confusion_matrix))
+
+# ***** Variation Decision Tree *****
+
+
+# ***** Hand-Engineered Features Decision Tree *****
+
+
