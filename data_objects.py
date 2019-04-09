@@ -51,15 +51,16 @@ class ConfusionMatrix:
         returnString.append("---0---1---2---3---4---5---6---7---8---9--\n")
         for classification in self.classifications:
             matrix_row = list(filter(lambda result: result.expected_class 
-                                                == classification, self.results))
+                                     == classification, self.results))
             returnString.append("{:1d}|".format(classification))
             for classification_2 in self.classifications:
-                matrix_box = list(filter(lambda result_2: result_2.predicted_class 
-                                                == classification_2, 
-                                                matrix_row))
+                matrix_box = list(filter(lambda result_2: 
+                                         result_2.predicted_class 
+                                         == classification_2, matrix_row))
                 returnString.append("{:3d}".format(len(matrix_box)))
                 returnString.append("|")
-            returnString.append("\n------------------------------------------\n")
+            returnString.append("\n------------------------------------------"
+                                "\n")
         return ''.join(returnString)
 
 class TestingResult:

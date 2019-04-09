@@ -19,8 +19,8 @@ labels_filename = 'labels.npy'
 training_size = .6
 validation_size = .15
 test_size = .25
-training_epochs = 10
-training_batch_size = 512
+training_epochs = 256
+training_batch_size = 128
 
 # Fields
 labeled_image_list = []
@@ -125,20 +125,15 @@ model = Sequential()
 # 3. number of layers and neurons per layer (including the first)
 # first layer
 
-model.add(Dense(10, input_shape=(Image._image_size,), 
-                kernel_initializer='he_normal'))
-model.add(Activation('relu'))
-
-#
-#
-#
-# Fill in Model Here
-#
-#
-
+model.add(Dense(64, input_shape=(Image._image_size,), 
+                kernel_initializer='glorot_normal', activation='relu'))
+model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
+model.add(Dense(64, kernel_initializer='glorot_normal', activation='relu'))
+model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
+model.add(Dense(64, kernel_initializer='glorot_normal', activation='relu'))
+model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
 # last layer - don't change this
-model.add(Dense(10, kernel_initializer='he_normal'))
-model.add(Activation('softmax'))
+model.add(Dense(10, kernel_initializer='he_normal', activation='softmax'))
 
 # Compile Model - don't change this
 model.compile(optimizer='sgd', loss='categorical_crossentropy', 
