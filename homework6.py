@@ -7,7 +7,8 @@ import tensorflow as tf
 from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Activation
-from data_objects import LabeledImage, Image, Label
+from data_objects import (LabeledImage, Image, Label, ConfusionMatrix,  
+                          TestingResult)
 
 # get rid of annoying tf warnings that I can't change
 tf.logging.set_verbosity(tf.logging.ERROR)
@@ -47,6 +48,8 @@ for one_hot_label in labels_as_one_hot:
         continue
     else:
         classifications.append(label.classification)
+# be sure to sort classifications to make it easier to understand later
+classifications.sort()
 print('Classifications: {}'.format(classifications))
 
 i = 0
@@ -140,14 +143,27 @@ model.add(Activation('softmax'))
 # Compile Model - don't change this
 model.compile(optimizer='sgd', loss='categorical_crossentropy', 
               metrics=['accuracy'])
-model.summary()
+#model.summary()
 # Train Model
 history = model.fit(data_train, label_train, 
                     validation_data = (data_valid, label_valid), 
                     epochs=training_epochs, 
                     batch_size=training_batch_size)
 # Report Results
-print(history.history)
+#print(history.history)
 
-prediction = model.predict(data_test)
-print("shape: {}".format(prediction.shape))
+predictions = model.predict(data_test)
+testing_results = []
+k = 0
+for prediction in predictions:
+    # we can use argmax to get the index of the highest propbability, 
+    # which should translate directly into predicted class, since class
+    # is sorted by number, which automatically corresponds to the index
+    predicted_class = np.argmax(prediction)
+    expected_class = test_data[k].label.classification
+    test_result = TestingResult(predicted_class, expected_class)
+    testing_results.append(test_result)
+    k += 1
+
+confusion_matrix = ConfusionMatrix(testing_results, classifications)
+print("\nConfusion Matrix:\n{}".format(confusion_matrix))
