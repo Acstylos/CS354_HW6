@@ -1,7 +1,6 @@
 import numpy as np
 import tensorflow as tf
 import os
-import copy
 import random
 import contextlib
 
@@ -32,7 +31,6 @@ class_image_dictionary = {}
 training_data = []
 validation_data = []
 test_data = []
-image_shape = (1,1)
 
 # Helper methods
 def log(message):
@@ -50,9 +48,9 @@ with contextlib.suppress(FileNotFoundError):
 images = np.load(images_filename)
 labels = np.load(labels_filename)
 
-# ***** Create List of all Images and a list of Classifications *****
+# ***** Create list of all Images and a list of Classifications *****
 # each image has an associated label, so get them in the one-hot format
-# we want
+# we want for keras classification
 labels_as_one_hot = to_categorical(labels, dtype='int32')
 # get unique classifications
 for one_hot_label in labels_as_one_hot:
@@ -73,8 +71,6 @@ for image_matrix in images:
     labeled_image = LabeledImage(label, image)
     labeled_image_list.append(labeled_image)
     i += 1
-image_shape = np.shape(labeled_image_list[0].image.flat_image)
-log("Image Shape: {}\n".format(image_shape))
 log("ImageList Size: {}\n".format(len(labeled_image_list)))
 
 # ***** Straify the Data, and assign to Sets *****
@@ -91,7 +87,7 @@ for classification, images in class_image_dictionary.items():
     # pseudo-randomize the entire list
     random.shuffle(images)
     # take a subset based on proportionally sized indicies, taking the 
-    # floor as size of subset. int automatically truncates/floors 
+    # floor as size of subset. int() automatically truncates/floors 
     # floats, which size*len should be, since size is a float
     training_end_index = int(training_size*total_length)
     validation_end_index = (training_end_index 
@@ -139,27 +135,27 @@ model = Sequential()
 
 # first layer (technically I think this is hidden/middle 1, and first 
 # layer is actually a mock copy of the training data)
-model.add(Dense(64, input_shape=(Image._image_size,), 
-                kernel_initializer='glorot_normal', activation='relu'))
+model.add(Dense(64, input_shape = (Image._image_size,), 
+                kernel_initializer = 'glorot_normal', activation = 'relu'))
 # mid layers                
-model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
-model.add(Dense(64, kernel_initializer='glorot_normal', activation='relu'))
-model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
-model.add(Dense(64, kernel_initializer='glorot_normal', activation='relu'))
-model.add(Dense(64, kernel_initializer='lecun_uniform', activation='tanh'))
+model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
+model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
+model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
 # last layer - don't change this
-model.add(Dense(10, kernel_initializer='he_normal', activation='softmax'))
+model.add(Dense(10, kernel_initializer = 'he_normal', activation = 'softmax'))
 
 # Compile Model - don't change this
-model.compile(optimizer='sgd', loss='categorical_crossentropy', 
-              metrics=['accuracy'])
+model.compile(optimizer = 'sgd', loss = 'categorical_crossentropy', 
+              metrics = ['accuracy'])
 # debug usage
 # model.summary()
 
 # Train Model
 history = model.fit(data_train, label_train, 
                     validation_data = (data_valid, label_valid), 
-                    epochs=training_epochs, batch_size=training_batch_size)
+                    epochs = training_epochs, batch_size = training_batch_size)
 # Report Results
 # Use history data to graph performance of ANN over each epoch
 log(str(history.history))
@@ -170,7 +166,6 @@ confusion_matrix = ConfusionMatrix(predictions, test_data, classifications)
 log("\n\nTested Neural Network Accuracy: {:.6f}"
     .format(confusion_matrix.get_accuracy()))
 log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
-
 
 # ***** Baseline Decision Tree *****
 baseline_classifier = DecisionTreeClassifier()

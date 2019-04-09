@@ -83,7 +83,6 @@ class ConfusionMatrix:
         diagonal_count += len(accurate_list)
         return diagonal_count/len(self.results)
 
-
 class TestingResult:
     def __init__(self, predicted_class, expected_class):
         self.predicted_class = predicted_class
