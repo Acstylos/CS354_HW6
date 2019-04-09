@@ -1,3 +1,5 @@
+import numpy as np
+
 class LabeledImage:
     def __init__(self, label, image):
         self.label = label
@@ -39,8 +41,19 @@ class Label:
         return "Label: {}".format(self.classification)
 
 class ConfusionMatrix:
-    def __init__(self, results, classifications):
-        self.results = results
+    def __init__(self, predictions, test_data, classifications):
+        testing_results = []
+        x = 0
+        for prediction in predictions:
+            # we can use argmax to get the index of the highest probability, 
+            # which should translate directly into predicted class, since class
+            # is sorted by number, which automatically corresponds to the index
+            predicted_class = np.argmax(prediction)
+            expected_class = test_data[x].label.classification
+            test_result = TestingResult(predicted_class, expected_class)
+            testing_results.append(test_result)
+            x += 1
+        self.results = testing_results
         self.classifications = classifications
 
     def __repr__(self):
@@ -62,6 +75,14 @@ class ConfusionMatrix:
             returnString.append("\n------------------------------------------"
                                 "\n")
         return ''.join(returnString)
+    
+    def get_accuracy(self):
+        diagonal_count = 0
+        accurate_list = list(filter(lambda result: result.is_correct(), 
+                                    self.results))
+        diagonal_count += len(accurate_list)
+        return diagonal_count/len(self.results)
+
 
 class TestingResult:
     def __init__(self, predicted_class, expected_class):

@@ -42,20 +42,6 @@ def log(message):
     with open(output_filename, "a") as output_file:
         output_file.write(message)
 
-def generate_confusion_matrix(predictions, test_data, classifications):
-    testing_results = []
-    x = 0
-    for prediction in predictions:
-        # we can use argmax to get the index of the highest probability, 
-        # which should translate directly into predicted class, since class
-        # is sorted by number, which automatically corresponds to the index
-        predicted_class = np.argmax(prediction)
-        expected_class = test_data[x].label.classification
-        test_result = TestingResult(predicted_class, expected_class)
-        testing_results.append(test_result)
-        x += 1
-    return ConfusionMatrix(testing_results, classifications)
-
 # remove previous output file
 with contextlib.suppress(FileNotFoundError):
     os.remove(output_filename)
@@ -178,10 +164,13 @@ history = model.fit(data_train, label_train,
                     epochs=training_epochs, batch_size=training_batch_size)
 # Report Results
 # debug usage
-# print(history.history)
+#log(history.history)
+log("\n\nKeras Neural Network Accuracy: {:.6f}"
+    .format(history.history.get('acc')[-1]))
 predictions = model.predict(data_test)
-confusion_matrix = generate_confusion_matrix(predictions, test_data, 
-                                             classifications)
+confusion_matrix = ConfusionMatrix(predictions, test_data, classifications)
+log("\n\nCalc'd Neural Network Accuracy: {:.6f}"
+    .format(confusion_matrix.get_accuracy()))
 log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 
 
@@ -189,9 +178,10 @@ log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 baseline_classifier = DecisionTreeClassifier()
 baseline_classifier = baseline_classifier.fit(data_train, label_train)
 baseline_tree_prediction = baseline_classifier.predict(data_test)
-baseline_tree_confusion_matrix = generate_confusion_matrix(
-                                    baseline_tree_prediction, 
-                                    test_data, classifications)
+baseline_tree_confusion_matrix = ConfusionMatrix(baseline_tree_prediction, 
+                                                 test_data, classifications)
+log("\n\nCalc'd Baseline Tree Accuracy: {:.6f}"
+    .format(baseline_tree_confusion_matrix.get_accuracy()))
 log("\nBaseline Tree Confusion Matrix:\n{}"
     .format(baseline_tree_confusion_matrix))
 
