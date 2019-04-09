@@ -1,13 +1,16 @@
 import numpy as np
 import os.path
-#import keras.utils as ku
+import copy
+import random
+import tensorflow as tf
+
 from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Activation
-import copy
-import random
-
 from data_objects import LabeledImage, Image, Label
+
+# get rid of annoying tf warnings that I can't change
+tf.logging.set_verbosity(tf.logging.ERROR)
 
 # Constants
 images_filename = 'images.npy'
@@ -15,6 +18,8 @@ labels_filename = 'labels.npy'
 training_size = .6
 validation_size = .15
 test_size = .25
+training_epochs = 10
+training_batch_size = 512
 
 # Fields
 labeled_image_list = []
@@ -23,6 +28,7 @@ class_image_dictionary = {}
 training_data = []
 validation_data = []
 test_data = []
+image_shape = (1,1)
 
 # ***** Load Data Files *****
 # size of each nparray should be the same once converted into individual
@@ -51,6 +57,8 @@ for image_matrix in images:
     labeled_image = LabeledImage(label, image)
     labeled_image_list.append(labeled_image)
     i += 1
+image_shape = np.shape(labeled_image_list[0].image.flat_image)
+print("Image Shape: {}".format(image_shape))
 print("ImageList Size: {}\n".format(len(labeled_image_list)))
 
 # ***** Straify the Data, and assign to Sets *****
@@ -93,6 +101,18 @@ print("Total:\t\t{}\nTraining:\t{}\nValidation:\t{}\nTest:\t\t{}"
       .format(len(training_data)+len(validation_data)+len(test_data), 
               len(training_data), len(validation_data), len(test_data)))
 
+
+# ***** DO ANN Stuff Below Here *****
+data_train = np.asarray(list(image.image.flat_image for image 
+                             in training_data))
+label_train = np.asarray(list(image.label.one_hot for image in training_data))
+data_valid = np.asarray(list(image.image.flat_image for image 
+                             in validation_data))
+label_valid = np.asarray(list(image.label.one_hot for image 
+                              in validation_data))
+data_test = np.asarray(list(image.image.flat_image for image in test_data))
+label_test = np.asarray(list(image.label.one_hot for image in test_data))
+
 # declare model - don't change this
 model = Sequential()
 
@@ -101,8 +121,9 @@ model = Sequential()
 # 2. Using ReLu, SeLu, and Tanh activation units
 # 3. number of layers and neurons per layer (including the first)
 # first layer
-model.add(Dense(10, input_shape=(28*28, ), 
-          kernel_initializer='he_normal'))
+
+model.add(Dense(10, input_shape=(Image._image_size,), 
+                kernel_initializer='he_normal'))
 model.add(Activation('relu'))
 
 #
@@ -119,11 +140,14 @@ model.add(Activation('softmax'))
 # Compile Model - don't change this
 model.compile(optimizer='sgd', loss='categorical_crossentropy', 
               metrics=['accuracy'])
-
+model.summary()
 # Train Model
-history = model.fit(x_train, y_train, validation_data = (x_val, y_val), 
-                    epochs=10, batch_size=512)
-
+history = model.fit(data_train, label_train, 
+                    validation_data = (data_valid, label_valid), 
+                    epochs=training_epochs, 
+                    batch_size=training_batch_size)
 # Report Results
 print(history.history)
-model.predict()
+
+prediction = model.predict(data_test)
+print("shape: {}".format(prediction.shape))

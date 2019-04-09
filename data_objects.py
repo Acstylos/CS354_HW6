@@ -19,8 +19,7 @@ class Image:
     def __init__(self, image_matrix):
         self.image_matrix = image_matrix
         # reshape the matrix into the flat-format we want
-        self.flat_image = image_matrix.reshape(self._flat_rows, 
-                                                self._image_size)
+        self.flat_image = image_matrix.reshape(self._image_size)
     
     def __repr__(self):
         return "Image"
