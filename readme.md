@@ -8,6 +8,9 @@ Scikit-Learn for Decision Trees.
 ## Authors
 
 * **Alexander Stylos** - *Initial work* - [Acstylos](https://github.com/Acstylos)
+* **Justin Seeley** - *Separate Initial work [here](https://github.com/jpseeley/cs534-hw6)* - [jpseeley](https://github.com/jpseeley)
+
+Efforts were later combined.
 
 ## License
 
