@@ -1,8 +1,10 @@
 import numpy as np
-import os.path
+import tensorflow as tf
+import os
 import copy
 import random
-import tensorflow as tf
+import contextlib
+
 
 from keras.utils import to_categorical
 from keras.models import Sequential
@@ -16,6 +18,7 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 # Constants
 images_filename = 'images.npy'
 labels_filename = 'labels.npy'
+output_filename = 'output.txt'
 training_size = .6
 validation_size = .15
 test_size = .25
@@ -30,6 +33,17 @@ training_data = []
 validation_data = []
 test_data = []
 image_shape = (1,1)
+
+# Helper methods
+def log(message):
+    print(message)
+    with open(output_filename, "a") as output_file:
+        output_file.write(message)
+
+# remove previous output file
+with contextlib.suppress(FileNotFoundError):
+    os.remove(output_filename)
+    
 
 # ***** Load Data Files *****
 # size of each nparray should be the same once converted into individual
@@ -50,7 +64,7 @@ for one_hot_label in labels_as_one_hot:
         classifications.append(label.classification)
 # be sure to sort classifications to make it easier to understand later
 classifications.sort()
-print('Classifications: {}'.format(classifications))
+log('Classifications: {}\n'.format(classifications))
 
 i = 0
 for image_matrix in images:
@@ -61,8 +75,8 @@ for image_matrix in images:
     labeled_image_list.append(labeled_image)
     i += 1
 image_shape = np.shape(labeled_image_list[0].image.flat_image)
-print("Image Shape: {}".format(image_shape))
-print("ImageList Size: {}\n".format(len(labeled_image_list)))
+log("Image Shape: {}\n".format(image_shape))
+log("ImageList Size: {}\n".format(len(labeled_image_list)))
 
 # ***** Straify the Data, and assign to Sets *****
 # Sort images by classification into strata
@@ -91,7 +105,7 @@ for classification, images in class_image_dictionary.items():
     # list
     test_subset = images[validation_end_index:]
     test_data += test_subset
-    print("Class:{}\n\tSize:\t\t{:3d}\n\tTrainSize:\t{:3d}:: {:.3f}%"
+    log("\nClass:{}\n\tSize:\t\t{:3d}\n\tTrainSize:\t{:3d}:: {:.3f}%"
           "\n\tValidSize:\t{:3d}:: {:.3f}%\n\tTestSize:\t{:3d}::"
           " {:.3f}%".format(classification, total_length, 
                             len(training_subset), 
@@ -100,7 +114,7 @@ for classification, images in class_image_dictionary.items():
                             len(validation_subset)/total_length, 
                             len(test_subset), 
                             len(test_subset)/total_length))
-print("Total:\t\t{}\nTraining:\t{}\nValidation:\t{}\nTest:\t\t{}"
+log("\nTotal:\t\t{}\nTraining:\t{}\nValidation:\t{}\nTest:\t\t{}"
       .format(len(training_data)+len(validation_data)+len(test_data), 
               len(training_data), len(validation_data), len(test_data)))
 
@@ -164,4 +178,4 @@ for prediction in predictions:
     k += 1
 
 confusion_matrix = ConfusionMatrix(testing_results, classifications)
-print("\nConfusion Matrix:\n{}".format(confusion_matrix))
+log("\nConfusion Matrix:\n{}".format(confusion_matrix))
