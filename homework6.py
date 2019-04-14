@@ -170,10 +170,11 @@ log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 # ***** Baseline Decision Tree *****
 baseline_classifier = DecisionTreeClassifier()
 baseline_classifier = baseline_classifier.fit(data_train, label_train)
-baseline_tree_prediction = baseline_classifier.predict(data_test)
+baseline_tree_prediction = baseline_classifier.predict(data_valid)
 baseline_tree_confusion_matrix = ConfusionMatrix(baseline_tree_prediction, 
-                                                 test_data, classifications)
-log("\n\nTested Baseline Tree Accuracy: {:.6f}"
+                                                 validation_data, 
+                                                 classifications)
+log("\n\nValidation Baseline Tree Accuracy: {:.6f}"
     .format(baseline_tree_confusion_matrix.get_accuracy()))
 log("\nBaseline Tree Confusion Matrix:\n{}"
     .format(baseline_tree_confusion_matrix))
@@ -184,14 +185,31 @@ variation_classifier = DecisionTreeClassifier(max_depth=12,
                                               max_leaf_nodes=128,
                                               criterion='entropy')
 variation_classifier = variation_classifier.fit(data_train, label_train)
-variation_tree_prediction = variation_classifier.predict(data_test)
+variation_tree_prediction = variation_classifier.predict(data_valid)
 variation_tree_confusion_matrix = ConfusionMatrix(variation_tree_prediction, 
-                                                 test_data, classifications)
-log("\n\nTested Variation Tree Accuracy: {:.6f}"
+                                                 validation_data, 
+                                                 classifications)
+log("\n\nValidation Variation Tree Accuracy: {:.6f}"
     .format(variation_tree_confusion_matrix.get_accuracy()))
 log("\nVariation Tree Confusion Matrix:\n{}"
     .format(variation_tree_confusion_matrix))
 
 # ***** Hand-Engineered Features Decision Tree *****
+# Feature 1 - Average Pixel Density in image
+pixel_density_training = np.reshape(np.asarray([np.mean(img) for img in data_train]), (len(data_train), 1))
+pixel_density_validation = np.reshape(np.asarray([np.mean(img) for img in data_valid]), (len(data_valid), 1))
+
+crafted_data_train = pixel_density_training
+crafted_data_valid = pixel_density_validation
 
 
+crafted_classifier = DecisionTreeClassifier()
+crafted_classifier = crafted_classifier.fit(crafted_data_train, label_train)
+crafted_tree_prediction = crafted_classifier.predict(crafted_data_valid)
+crafted_tree_confusion_matrix = ConfusionMatrix(crafted_tree_prediction, 
+                                                 validation_data, 
+                                                 classifications)
+log("\n\nValidation Variation Tree Accuracy: {:.6f}"
+    .format(crafted_tree_confusion_matrix.get_accuracy()))
+log("\nVariation Tree Confusion Matrix:\n{}"
+    .format(crafted_tree_confusion_matrix))
