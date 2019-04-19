@@ -202,6 +202,9 @@ pixel_density_training = np.reshape(np.asarray([np.mean(img) for img in
 pixel_density_validation = np.reshape(np.asarray([np.mean(img) for img in 
                                                   data_valid]), 
                                                   (len(data_valid), 1))
+pixel_density_test = np.reshape(np.asarray([np.mean(img) for img in 
+                                            data_test]), 
+                                            (len(data_test), 1))
 
 # Feature 2 - Density of White Pixels in Center of image
 
@@ -212,6 +215,7 @@ pixel_density_validation = np.reshape(np.asarray([np.mean(img) for img in
 # Create full training, validation, and test set
 crafted_data_train = pixel_density_training
 crafted_data_valid = pixel_density_validation
+crafted_data_test = pixel_density_test
 
 crafted_classifier = DecisionTreeClassifier()
 crafted_classifier = crafted_classifier.fit(crafted_data_train, label_train)
@@ -223,3 +227,33 @@ log("\n\nValidation Variation Tree Accuracy: {:.6f}"
     .format(crafted_tree_confusion_matrix.get_accuracy()))
 log("\nVariation Tree Confusion Matrix:\n{}"
     .format(crafted_tree_confusion_matrix))
+
+
+# Test Data for Each Decision Tree:
+
+# baseline_tree_test_prediction = baseline_classifier.predict(crafted_data_test)
+# baseline_tree_test_confusion_matrix = ConfusionMatrix(baseline_tree_test_prediction, 
+#                                                  test_data, 
+#                                                  classifications)
+# log("\n\Test Baseline Tree Accuracy: {:.6f}"
+#     .format(baseline_tree_test_confusion_matrix.get_accuracy()))
+# log("\nBaseline Tree Confusion Matrix:\n{}"
+#     .format(baseline_tree_test_confusion_matrix))
+
+# variation_tree_test_prediction = variation_classifier.predict(crafted_data_test)
+# variation_tree_test_confusion_matrix = ConfusionMatrix(variation_tree_test_prediction, 
+#                                                  test_data, 
+#                                                  classifications)
+# log("\n\Test Variation Tree Accuracy: {:.6f}"
+#     .format(variation_tree_test_confusion_matrix.get_accuracy()))
+# log("\nVariation Tree Confusion Matrix:\n{}"
+#     .format(variation_tree_test_confusion_matrix))
+
+# crafted_tree_test_prediction = crafted_classifier.predict(crafted_data_test)
+# crafted_tree_test_confusion_matrix = ConfusionMatrix(crafted_tree_test_prediction, 
+#                                                  test_data, 
+#                                                  classifications)
+# log("\n\Test Variation Tree Accuracy: {:.6f}"
+#     .format(crafted_tree_test_confusion_matrix.get_accuracy()))
+# log("\nVariation Tree Confusion Matrix:\n{}"
+#     .format(crafted_tree_test_confusion_matrix))
