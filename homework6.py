@@ -178,7 +178,7 @@ log("\n\nTested Neural Network Accuracy: {:.6f}"
     .format(confusion_matrix.get_accuracy()))
 log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 
-model.save("model_file.txt")
+model.save("trained_model.hw6")
 
 # ***** Baseline Decision Tree *****
 baseline_classifier = DecisionTreeClassifier()
