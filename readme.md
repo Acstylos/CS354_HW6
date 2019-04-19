@@ -5,6 +5,9 @@ The goal is to explore Artificial Neural Networks and Decision Trees, using
 an existing dataset to train with. This project uses Keras for the ANN, and 
 Scikit-Learn for Decision Trees.
 
+This was built using Keras and Tensorflow version only compatible with Python 3.6.2.
+Please use this version of python to run the script.
+
 ## Authors
 
 * **Alexander Stylos** - *Initial work* - [Acstylos](https://github.com/Acstylos)
