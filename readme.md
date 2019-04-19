@@ -5,8 +5,16 @@ The goal is to explore Artificial Neural Networks and Decision Trees, using
 an existing dataset to train with. This project uses Keras for the ANN, and 
 Scikit-Learn for Decision Trees.
 
+## Instructions
+
 This was built using Keras and Tensorflow version only compatible with Python 3.6.2.
 Please use this version of python to run the script.
+
+To run this program, and ensure you use your python 3.6.2 environment run the command
+`py -3.6 homework6.py`
+which takes advantage of the python launcher "py"
+or if python 3.6 is the only version of python in your path,
+`python homework6.py`
 
 ## Authors
 
