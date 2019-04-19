@@ -125,97 +125,273 @@ label_valid = np.asarray(list(image.label.one_hot for image
                               in validation_data))
 data_test = np.asarray(list(image.image.flat_image for image in test_data))
 
+data_full_image_train = np.asarray(list(image.image.image_matrix for image 
+                                   in training_data))
+label_full_image_train = np.asarray(list(image.label.one_hot for image in 
+                                    training_data))
+data_full_image_valid = np.asarray(list(image.image.image_matrix for image 
+                                   in validation_data))
+label_full_image_valid = np.asarray(list(image.label.one_hot for image 
+                                    in validation_data))
+data_full_image_test = np.asarray(list(image.image.image_matrix for image 
+                                  in test_data))
+
 # declare model - don't change this
 model = Sequential()
 
-# Experiment by modifying first and subsequent layers in the ANN by:
-# 1. initializing weights randomly for every layer
-# 2. Using ReLu, SeLu, and Tanh activation units
-# 3. number of layers and neurons per layer (including the first)
+# # Experiment by modifying first and subsequent layers in the ANN by:
+# # 1. initializing weights randomly for every layer
+# # 2. Using ReLu, SeLu, and Tanh activation units
+# # 3. number of layers and neurons per layer (including the first)
 
-# first layer (technically I think this is hidden/middle 1, and first 
-# layer is actually a mock copy of the training data)
-model.add(Dense(64, input_shape = (Image._image_size,), 
-                kernel_initializer = 'glorot_normal', activation = 'relu'))
-# mid layers                
-model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
-model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
-model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
-model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
-model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
-# last layer - don't change this
-model.add(Dense(10, kernel_initializer = 'he_normal', activation = 'softmax'))
+# # first layer (technically I think this is hidden/middle 1, and first 
+# # layer is actually a mock copy of the training data)
+# model.add(Dense(64, input_shape = (Image._image_size,), 
+#                 kernel_initializer = 'glorot_normal', activation = 'relu'))
+# # mid layers                
+# model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+# model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
+# model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+# model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
+# model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+# # last layer - don't change this
+# model.add(Dense(10, kernel_initializer = 'he_normal', activation = 'softmax'))
 
-# Compile Model - don't change this
-model.compile(optimizer = 'sgd', loss = 'categorical_crossentropy', 
-              metrics = ['accuracy'])
-# debug usage
-# model.summary()
+# # Compile Model - don't change this
+# model.compile(optimizer = 'sgd', loss = 'categorical_crossentropy', 
+#               metrics = ['accuracy'])
+# # debug usage
+# # model.summary()
 
-# Train Model
-history = model.fit(data_train, label_train, 
-                    validation_data = (data_valid, label_valid), 
-                    epochs = training_epochs, batch_size = training_batch_size)
-# Report Results
-# Use history data to graph performance of ANN over each epoch
-log(str(history.history))
-log("\n\nKeras Training Neural Network Accuracy: {:.6f}"
-    .format(history.history.get('acc')[-1]))
-predictions = model.predict(data_test)
-confusion_matrix = ConfusionMatrix(predictions, test_data, classifications)
-log("\n\nTested Neural Network Accuracy: {:.6f}"
-    .format(confusion_matrix.get_accuracy()))
-log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
+# # Train Model
+# history = model.fit(data_train, label_train, 
+#                     validation_data = (data_valid, label_valid), 
+#                     epochs = training_epochs, batch_size = training_batch_size)
+# # Report Results
+# # Use history data to graph performance of ANN over each epoch
+# log(str(history.history))
+# log("\n\nKeras Training Neural Network Accuracy: {:.6f}"
+#     .format(history.history.get('acc')[-1]))
+# predictions = model.predict(data_test)
+# confusion_matrix = ConfusionMatrix(predictions, test_data, classifications)
+# log("\n\nTested Neural Network Accuracy: {:.6f}"
+#     .format(confusion_matrix.get_accuracy()))
+# log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 
-# ***** Baseline Decision Tree *****
-baseline_classifier = DecisionTreeClassifier()
-baseline_classifier = baseline_classifier.fit(data_train, label_train)
-baseline_tree_prediction = baseline_classifier.predict(data_valid)
-baseline_tree_confusion_matrix = ConfusionMatrix(baseline_tree_prediction, 
-                                                 validation_data, 
-                                                 classifications)
-log("\n\nValidation Baseline Tree Accuracy: {:.6f}"
-    .format(baseline_tree_confusion_matrix.get_accuracy()))
-log("\nBaseline Tree Confusion Matrix:\n{}"
-    .format(baseline_tree_confusion_matrix))
+# # ***** Baseline Decision Tree *****
+# baseline_classifier = DecisionTreeClassifier()
+# baseline_classifier = baseline_classifier.fit(data_train, label_train)
+# baseline_tree_prediction = baseline_classifier.predict(data_valid)
+# baseline_tree_confusion_matrix = ConfusionMatrix(baseline_tree_prediction, 
+#                                                  validation_data, 
+#                                                  classifications)
+# log("\n\nValidation Baseline Tree Accuracy: {:.6f}"
+#     .format(baseline_tree_confusion_matrix.get_accuracy()))
+# log("\nBaseline Tree Confusion Matrix:\n{}"
+#     .format(baseline_tree_confusion_matrix))
 
-# ***** Variation Decision Tree *****
-variation_classifier = DecisionTreeClassifier(max_depth=12, 
-                                              min_samples_leaf=2, 
-                                              max_leaf_nodes=128,
-                                              criterion='entropy')
-variation_classifier = variation_classifier.fit(data_train, label_train)
-variation_tree_prediction = variation_classifier.predict(data_valid)
-variation_tree_confusion_matrix = ConfusionMatrix(variation_tree_prediction, 
-                                                 validation_data, 
-                                                 classifications)
-log("\n\nValidation Variation Tree Accuracy: {:.6f}"
-    .format(variation_tree_confusion_matrix.get_accuracy()))
-log("\nVariation Tree Confusion Matrix:\n{}"
-    .format(variation_tree_confusion_matrix))
+# # ***** Variation Decision Tree *****
+# variation_classifier = DecisionTreeClassifier(max_depth=12, 
+#                                               min_samples_leaf=2, 
+#                                               max_leaf_nodes=128,
+#                                               criterion='entropy')
+# variation_classifier = variation_classifier.fit(data_train, label_train)
+# variation_tree_prediction = variation_classifier.predict(data_valid)
+# variation_tree_confusion_matrix = ConfusionMatrix(variation_tree_prediction, 
+#                                                  validation_data, 
+#                                                  classifications)
+# log("\n\nValidation Variation Tree Accuracy: {:.6f}"
+#     .format(variation_tree_confusion_matrix.get_accuracy()))
+# log("\nVariation Tree Confusion Matrix:\n{}"
+#     .format(variation_tree_confusion_matrix))
 
 # ***** Hand-Engineered Features Decision Tree *****
 # Feature 1 - Average Pixel Density in image
 pixel_density_training = np.reshape(np.asarray([np.mean(img) for img in 
-                                                data_train]), 
-                                                (len(data_train), 1))
+                                            data_full_image_train]), 
+                                            (len(data_full_image_train), 1))
 pixel_density_validation = np.reshape(np.asarray([np.mean(img) for img in 
-                                                  data_valid]), 
-                                                  (len(data_valid), 1))
+                                            data_full_image_valid]), 
+                                            (len(data_full_image_valid), 1))
 pixel_density_test = np.reshape(np.asarray([np.mean(img) for img in 
-                                            data_test]), 
-                                            (len(data_test), 1))
+                                            data_full_image_test]), 
+                                            (len(data_full_image_test), 1))
 
-# Feature 2 - Density of White Pixels in Center of image
+# Feature 2-6 - Density of White Pixels in Center and corners of image
+center_box_width = 4
+center_box_height = 4
+corner_box_width = 11
+corner_box_height = 11
+top_left_corner_left = 0
+top_left_corner_top = 0
+top_right_corner_left = 16
+top_right_corner_top = 0
+bot_left_corner_left = 0
+bot_left_corner_top = 16
+bot_right_corner_left = 16
+bot_right_corner_top = 16
+center_corner_left = 12
+center_corner_top = 12
 
-# Feature 3-6 - Density of Pixels in 4-Corners
+def mean_box(image, box_left, box_top, box_width, box_height):
+    counter = 0
+    pixel_total = 0
+    for row in range(image.shape[0]-1):
+        for column in range(image.shape[1]-1):
+            if (row >= box_top and column >= box_left and row < box_top+box_height 
+                and column < box_left+box_width):
+                counter += 1
+                pixel_total = image[row][column]
+    return pixel_total / counter
+
+center_box_density_training = np.reshape(np.asarray([mean_box(img, 
+                                         center_corner_left, 
+                                         center_corner_top, 
+                                         center_box_width, 
+                                         center_box_height) 
+                                         for img 
+                                         in data_full_image_train]),
+                                         (len(data_full_image_train), 1))
+
+center_box_density_validation = np.reshape(np.asarray([mean_box(img, 
+                                         center_corner_left, 
+                                         center_corner_top, 
+                                         center_box_width, 
+                                         center_box_height) 
+                                         for img 
+                                         in data_full_image_valid]),
+                                         (len(data_full_image_valid), 1))
+
+center_box_density_test = np.reshape(np.asarray([mean_box(img, 
+                                         center_corner_left, 
+                                         center_corner_top, 
+                                         center_box_width, 
+                                         center_box_height) 
+                                         for img 
+                                         in data_full_image_test]),
+                                         (len(data_full_image_test), 1))
+
+top_left_box_density_training = np.reshape(np.asarray([mean_box(img, 
+                                         top_left_corner_left, 
+                                         top_left_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_train]),
+                                         (len(data_full_image_train), 1))
+
+top_left_box_density_validation = np.reshape(np.asarray([mean_box(img, 
+                                         top_left_corner_left, 
+                                         top_left_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_valid]),
+                                         (len(data_full_image_valid), 1))
+
+top_left_box_density_test = np.reshape(np.asarray([mean_box(img, 
+                                         top_left_corner_left, 
+                                         top_left_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_test]),
+                                         (len(data_full_image_test), 1))
+
+
+top_right_density_training = np.reshape(np.asarray([mean_box(img, 
+                                         top_right_corner_left, 
+                                         top_right_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_train]),
+                                         (len(data_full_image_train), 1))
+
+top_right_box_density_validation = np.reshape(np.asarray([mean_box(img, 
+                                         top_right_corner_left, 
+                                         top_right_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_valid]),
+                                         (len(data_full_image_valid), 1))
+
+top_right_box_density_test = np.reshape(np.asarray([mean_box(img, 
+                                         top_right_corner_left, 
+                                         top_right_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_test]),
+                                         (len(data_full_image_test), 1))
+
+bot_left_box_density_training = np.reshape(np.asarray([mean_box(img, 
+                                         bot_left_corner_left, 
+                                         bot_left_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_train]),
+                                         (len(data_full_image_train), 1))
+
+bot_left_box_density_validation = np.reshape(np.asarray([mean_box(img, 
+                                         bot_left_corner_left, 
+                                         bot_left_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_valid]),
+                                         (len(data_full_image_valid), 1))
+
+bot_left_box_density_test = np.reshape(np.asarray([mean_box(img, 
+                                         bot_left_corner_left, 
+                                         bot_left_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_test]),
+                                         (len(data_full_image_test), 1))
+
+bot_right_box_density_training = np.reshape(np.asarray([mean_box(img, 
+                                         bot_right_corner_left, 
+                                         bot_right_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_train]),
+                                         (len(data_full_image_train), 1))
+
+bot_right_box_density_validation = np.reshape(np.asarray([mean_box(img, 
+                                         bot_right_corner_left, 
+                                         bot_right_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_valid]),
+                                         (len(data_full_image_valid), 1))
+
+bot_right_box_density_test = np.reshape(np.asarray([mean_box(img, 
+                                         bot_right_corner_left, 
+                                         bot_right_corner_top, 
+                                         corner_box_width, 
+                                         corner_box_height) 
+                                         for img 
+                                         in data_full_image_test]),
+                                         (len(data_full_image_test), 1))
 
 # Feature 7-8 - Pixel counts in each row/column
+
+
 
 # Create full training, validation, and test set
 crafted_data_train = pixel_density_training
 crafted_data_valid = pixel_density_validation
 crafted_data_test = pixel_density_test
+
+
+
+
 
 crafted_classifier = DecisionTreeClassifier()
 crafted_classifier = crafted_classifier.fit(crafted_data_train, label_train)
