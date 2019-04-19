@@ -5,6 +5,11 @@ The goal is to explore Artificial Neural Networks and Decision Trees, using
 an existing dataset to train with. This project uses Keras for the ANN, and 
 Scikit-Learn for Decision Trees.
 
+data_object.py contains the classes used to structure the data
+images.npy contains the np export of the image data
+labels.npy contains the np export of the label data
+train_model.hw6 contains the export of the trained Keras model
+output.txt contains the relevant output of the script
 ## Instructions
 
 This was built using Keras and Tensorflow version only compatible with Python 3.6.2.
