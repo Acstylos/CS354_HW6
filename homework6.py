@@ -196,12 +196,22 @@ log("\nVariation Tree Confusion Matrix:\n{}"
 
 # ***** Hand-Engineered Features Decision Tree *****
 # Feature 1 - Average Pixel Density in image
-pixel_density_training = np.reshape(np.asarray([np.mean(img) for img in data_train]), (len(data_train), 1))
-pixel_density_validation = np.reshape(np.asarray([np.mean(img) for img in data_valid]), (len(data_valid), 1))
+pixel_density_training = np.reshape(np.asarray([np.mean(img) for img in 
+                                                data_train]), 
+                                                (len(data_train), 1))
+pixel_density_validation = np.reshape(np.asarray([np.mean(img) for img in 
+                                                  data_valid]), 
+                                                  (len(data_valid), 1))
 
+# Feature 2 - Density of White Pixels in Center of image
+
+# Feature 3-6 - Density of Pixels in 4-Corners
+
+# Feature 7-8 - Pixel counts in each row/column
+
+# Create full training, validation, and test set
 crafted_data_train = pixel_density_training
 crafted_data_valid = pixel_density_validation
-
 
 crafted_classifier = DecisionTreeClassifier()
 crafted_classifier = crafted_classifier.fit(crafted_data_train, label_train)
