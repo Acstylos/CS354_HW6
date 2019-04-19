@@ -139,71 +139,73 @@ data_full_image_test = np.asarray(list(image.image.image_matrix for image
 # declare model - don't change this
 model = Sequential()
 
-# # Experiment by modifying first and subsequent layers in the ANN by:
-# # 1. initializing weights randomly for every layer
-# # 2. Using ReLu, SeLu, and Tanh activation units
-# # 3. number of layers and neurons per layer (including the first)
+# Experiment by modifying first and subsequent layers in the ANN by:
+# 1. initializing weights randomly for every layer
+# 2. Using ReLu, SeLu, and Tanh activation units
+# 3. number of layers and neurons per layer (including the first)
 
-# # first layer (technically I think this is hidden/middle 1, and first 
-# # layer is actually a mock copy of the training data)
-# model.add(Dense(64, input_shape = (Image._image_size,), 
-#                 kernel_initializer = 'glorot_normal', activation = 'relu'))
-# # mid layers                
-# model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
-# model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
-# model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
-# model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
-# model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
-# # last layer - don't change this
-# model.add(Dense(10, kernel_initializer = 'he_normal', activation = 'softmax'))
+# first layer (technically I think this is hidden/middle 1, and first 
+# layer is actually a mock copy of the training data)
+model.add(Dense(64, input_shape = (Image._image_size,), 
+                kernel_initializer = 'glorot_normal', activation = 'relu'))
+# mid layers                
+model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
+model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+model.add(Dense(64, kernel_initializer = 'glorot_normal', activation = 'relu'))
+model.add(Dense(64, kernel_initializer = 'lecun_uniform', activation = 'tanh'))
+# last layer - don't change this
+model.add(Dense(10, kernel_initializer = 'he_normal', activation = 'softmax'))
 
-# # Compile Model - don't change this
-# model.compile(optimizer = 'sgd', loss = 'categorical_crossentropy', 
-#               metrics = ['accuracy'])
-# # debug usage
-# # model.summary()
+# Compile Model - don't change this
+model.compile(optimizer = 'sgd', loss = 'categorical_crossentropy', 
+              metrics = ['accuracy'])
+# debug usage
+# model.summary()
 
-# # Train Model
-# history = model.fit(data_train, label_train, 
-#                     validation_data = (data_valid, label_valid), 
-#                     epochs = training_epochs, batch_size = training_batch_size)
-# # Report Results
-# # Use history data to graph performance of ANN over each epoch
-# log(str(history.history))
-# log("\n\nKeras Training Neural Network Accuracy: {:.6f}"
-#     .format(history.history.get('acc')[-1]))
-# predictions = model.predict(data_test)
-# confusion_matrix = ConfusionMatrix(predictions, test_data, classifications)
-# log("\n\nTested Neural Network Accuracy: {:.6f}"
-#     .format(confusion_matrix.get_accuracy()))
-# log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
+# Train Model
+history = model.fit(data_train, label_train, 
+                    validation_data = (data_valid, label_valid), 
+                    epochs = training_epochs, batch_size = training_batch_size)
+# Report Results
+# Use history data to graph performance of ANN over each epoch
+log(str(history.history))
+log("\n\nKeras Training Neural Network Accuracy: {:.6f}"
+    .format(history.history.get('acc')[-1]))
+predictions = model.predict(data_test)
+confusion_matrix = ConfusionMatrix(predictions, test_data, classifications)
+log("\n\nTested Neural Network Accuracy: {:.6f}"
+    .format(confusion_matrix.get_accuracy()))
+log("\nNeural Network Confusion Matrix:\n{}".format(confusion_matrix))
 
-# # ***** Baseline Decision Tree *****
-# baseline_classifier = DecisionTreeClassifier()
-# baseline_classifier = baseline_classifier.fit(data_train, label_train)
-# baseline_tree_prediction = baseline_classifier.predict(data_valid)
-# baseline_tree_confusion_matrix = ConfusionMatrix(baseline_tree_prediction, 
-#                                                  validation_data, 
-#                                                  classifications)
-# log("\n\nValidation Baseline Tree Accuracy: {:.6f}"
-#     .format(baseline_tree_confusion_matrix.get_accuracy()))
-# log("\nBaseline Tree Confusion Matrix:\n{}"
-#     .format(baseline_tree_confusion_matrix))
+model.save("model_file.txt")
 
-# # ***** Variation Decision Tree *****
-# variation_classifier = DecisionTreeClassifier(max_depth=12, 
-#                                               min_samples_leaf=2, 
-#                                               max_leaf_nodes=128,
-#                                               criterion='entropy')
-# variation_classifier = variation_classifier.fit(data_train, label_train)
-# variation_tree_prediction = variation_classifier.predict(data_valid)
-# variation_tree_confusion_matrix = ConfusionMatrix(variation_tree_prediction, 
-#                                                  validation_data, 
-#                                                  classifications)
-# log("\n\nValidation Variation Tree Accuracy: {:.6f}"
-#     .format(variation_tree_confusion_matrix.get_accuracy()))
-# log("\nVariation Tree Confusion Matrix:\n{}"
-#     .format(variation_tree_confusion_matrix))
+# ***** Baseline Decision Tree *****
+baseline_classifier = DecisionTreeClassifier()
+baseline_classifier = baseline_classifier.fit(data_train, label_train)
+baseline_tree_prediction = baseline_classifier.predict(data_valid)
+baseline_tree_confusion_matrix = ConfusionMatrix(baseline_tree_prediction, 
+                                                 validation_data, 
+                                                 classifications)
+log("\n\nValidation Baseline Tree Accuracy: {:.6f}"
+    .format(baseline_tree_confusion_matrix.get_accuracy()))
+log("\nBaseline Tree Confusion Matrix:\n{}"
+    .format(baseline_tree_confusion_matrix))
+
+# ***** Variation Decision Tree *****
+variation_classifier = DecisionTreeClassifier(max_depth=12, 
+                                              min_samples_leaf=2, 
+                                              max_leaf_nodes=128,
+                                              criterion='entropy')
+variation_classifier = variation_classifier.fit(data_train, label_train)
+variation_tree_prediction = variation_classifier.predict(data_valid)
+variation_tree_confusion_matrix = ConfusionMatrix(variation_tree_prediction, 
+                                                 validation_data, 
+                                                 classifications)
+log("\n\nValidation Variation Tree Accuracy: {:.6f}"
+    .format(variation_tree_confusion_matrix.get_accuracy()))
+log("\nVariation Tree Confusion Matrix:\n{}"
+    .format(variation_tree_confusion_matrix))
 
 # ***** Hand-Engineered Features Decision Tree *****
 # Feature 1 - Average Pixel Density in image
@@ -236,8 +238,8 @@ center_corner_top = 12
 def mean_box(image, box_left, box_top, box_width, box_height):
     counter = 0
     pixel_total = 0
-    for row in range(image.shape[0]-1):
-        for column in range(image.shape[1]-1):
+    for row in range(image.shape[0]):
+        for column in range(image.shape[1]):
             if (row >= box_top and column >= box_left and row < box_top+box_height 
                 and column < box_left+box_width):
                 counter += 1
@@ -297,7 +299,6 @@ top_left_box_density_test = np.reshape(np.asarray([mean_box(img,
                                          for img 
                                          in data_full_image_test]),
                                          (len(data_full_image_test), 1))
-
 
 top_right_density_training = np.reshape(np.asarray([mean_box(img, 
                                          top_right_corner_left, 
@@ -382,16 +383,88 @@ bot_right_box_density_test = np.reshape(np.asarray([mean_box(img,
 
 # Feature 7-8 - Pixel counts in each row/column
 
+def count_black_pixels_in_row(image):
+    threshold = 30
+    number_of_pixels_list = []
+    for row in range(image.shape[0]):
+        pixel_counter = 0
+        for column in range(image.shape[1]):
+            if image[row][column] < threshold:
+                pixel_counter += 1
+        number_of_pixels_list.append(pixel_counter)
+    return number_of_pixels_list
 
+def count_black_pixels_in_column(image):
+    threshold = 30
+    number_of_pixels_list = []
+    for column in range(image.shape[1]):
+        pixel_counter = 0
+        for row in range(image.shape[0]):
+            if image[row][column] < threshold:
+                pixel_counter += 1
+        number_of_pixels_list.append(pixel_counter)
+    return number_of_pixels_list
+
+pixel_row_count_training = np.reshape(np.asarray(
+                                         [count_black_pixels_in_row(img)
+                                         for img 
+                                         in data_full_image_train]),
+                                         (len(data_full_image_train), 28))
+
+pixel_row_count_validation = np.reshape(np.asarray(
+                                         [count_black_pixels_in_row(img)
+                                         for img 
+                                         in data_full_image_valid]),
+                                         (len(data_full_image_valid), 28))
+
+pixel_row_count_test = np.reshape(np.asarray([count_black_pixels_in_row(img)
+                                              for img 
+                                              in data_full_image_test]),
+                                              (len(data_full_image_test), 28))
+
+pixel_column_count_training = np.reshape(np.asarray(
+                                         [count_black_pixels_in_column(img)
+                                         for img 
+                                         in data_full_image_train]),
+                                         (len(data_full_image_train), 28))
+
+pixel_column_count_validation = np.reshape(np.asarray(
+                                         [count_black_pixels_in_column(img)
+                                         for img 
+                                         in data_full_image_valid]),
+                                         (len(data_full_image_valid), 28))
+
+pixel_column_count_test = np.reshape(np.asarray(
+                                     [count_black_pixels_in_column(img)
+                                     for img 
+                                     in data_full_image_test]),
+                                     (len(data_full_image_test), 28))
 
 # Create full training, validation, and test set
 crafted_data_train = pixel_density_training
+crafted_data_train = np.append(crafted_data_train, center_box_density_training, axis=1)
+crafted_data_train = np.append(crafted_data_train, top_left_box_density_training, axis=1)
+crafted_data_train = np.append(crafted_data_train, top_right_density_training, axis=1)
+crafted_data_train = np.append(crafted_data_train, bot_left_box_density_training, axis=1)
+crafted_data_train = np.append(crafted_data_train, bot_right_box_density_training, axis=1)
+crafted_data_train = np.append(crafted_data_train, pixel_row_count_training, axis=1)
+crafted_data_train = np.append(crafted_data_train, pixel_column_count_training, axis=1)
 crafted_data_valid = pixel_density_validation
-crafted_data_test = pixel_density_test
-
-
-
-
+crafted_data_valid = np.append(crafted_data_valid, center_box_density_validation, axis=1)
+crafted_data_valid = np.append(crafted_data_valid, top_left_box_density_validation, axis=1)
+crafted_data_valid = np.append(crafted_data_valid, top_right_box_density_validation, axis=1)
+crafted_data_valid = np.append(crafted_data_valid, bot_left_box_density_validation, axis=1)
+crafted_data_valid = np.append(crafted_data_valid, bot_right_box_density_validation, axis=1)
+crafted_data_valid = np.append(crafted_data_valid, pixel_row_count_validation, axis=1)
+crafted_data_valid = np.append(crafted_data_valid, pixel_column_count_validation, axis=1)
+crafted_data_test = np.asarray(pixel_density_test)
+crafted_data_test = np.append(crafted_data_test, center_box_density_test, axis=1)
+crafted_data_test = np.append(crafted_data_test, top_left_box_density_test, axis=1)
+crafted_data_test = np.append(crafted_data_test, top_right_box_density_test, axis=1)
+crafted_data_test = np.append(crafted_data_test, bot_left_box_density_test, axis=1)
+crafted_data_test = np.append(crafted_data_test, bot_right_box_density_test, axis=1)
+crafted_data_test = np.append(crafted_data_test, pixel_row_count_test, axis=1)
+crafted_data_test = np.append(crafted_data_test, pixel_column_count_test, axis=1)
 
 crafted_classifier = DecisionTreeClassifier()
 crafted_classifier = crafted_classifier.fit(crafted_data_train, label_train)
@@ -399,37 +472,35 @@ crafted_tree_prediction = crafted_classifier.predict(crafted_data_valid)
 crafted_tree_confusion_matrix = ConfusionMatrix(crafted_tree_prediction, 
                                                  validation_data, 
                                                  classifications)
-log("\n\nValidation Variation Tree Accuracy: {:.6f}"
+log("\n\nValidation Crafted Tree Accuracy: {:.6f}"
     .format(crafted_tree_confusion_matrix.get_accuracy()))
-log("\nVariation Tree Confusion Matrix:\n{}"
+log("\nCrafted Tree Confusion Matrix:\n{}"
     .format(crafted_tree_confusion_matrix))
 
-
 # Test Data for Each Decision Tree:
+baseline_tree_test_prediction = baseline_classifier.predict(data_test)
+baseline_tree_test_confusion_matrix = ConfusionMatrix(baseline_tree_test_prediction, 
+                                                 test_data, 
+                                                 classifications)
+log("\n\nTest Baseline Tree Accuracy: {:.6f}"
+    .format(baseline_tree_test_confusion_matrix.get_accuracy()))
+log("\nBaseline Tree Confusion Matrix:\n{}"
+    .format(baseline_tree_test_confusion_matrix))
 
-# baseline_tree_test_prediction = baseline_classifier.predict(crafted_data_test)
-# baseline_tree_test_confusion_matrix = ConfusionMatrix(baseline_tree_test_prediction, 
-#                                                  test_data, 
-#                                                  classifications)
-# log("\n\Test Baseline Tree Accuracy: {:.6f}"
-#     .format(baseline_tree_test_confusion_matrix.get_accuracy()))
-# log("\nBaseline Tree Confusion Matrix:\n{}"
-#     .format(baseline_tree_test_confusion_matrix))
+variation_tree_test_prediction = variation_classifier.predict(data_test)
+variation_tree_test_confusion_matrix = ConfusionMatrix(variation_tree_test_prediction, 
+                                                 test_data, 
+                                                 classifications)
+log("\n\nTest Variation Tree Accuracy: {:.6f}"
+    .format(variation_tree_test_confusion_matrix.get_accuracy()))
+log("\nVariation Tree Confusion Matrix:\n{}"
+    .format(variation_tree_test_confusion_matrix))
 
-# variation_tree_test_prediction = variation_classifier.predict(crafted_data_test)
-# variation_tree_test_confusion_matrix = ConfusionMatrix(variation_tree_test_prediction, 
-#                                                  test_data, 
-#                                                  classifications)
-# log("\n\Test Variation Tree Accuracy: {:.6f}"
-#     .format(variation_tree_test_confusion_matrix.get_accuracy()))
-# log("\nVariation Tree Confusion Matrix:\n{}"
-#     .format(variation_tree_test_confusion_matrix))
-
-# crafted_tree_test_prediction = crafted_classifier.predict(crafted_data_test)
-# crafted_tree_test_confusion_matrix = ConfusionMatrix(crafted_tree_test_prediction, 
-#                                                  test_data, 
-#                                                  classifications)
-# log("\n\Test Variation Tree Accuracy: {:.6f}"
-#     .format(crafted_tree_test_confusion_matrix.get_accuracy()))
-# log("\nVariation Tree Confusion Matrix:\n{}"
-#     .format(crafted_tree_test_confusion_matrix))
+crafted_tree_test_prediction = crafted_classifier.predict(crafted_data_test)
+crafted_tree_test_confusion_matrix = ConfusionMatrix(crafted_tree_test_prediction, 
+                                                 test_data, 
+                                                 classifications)
+log("\n\nTest Crafted Tree Accuracy: {:.6f}"
+    .format(crafted_tree_test_confusion_matrix.get_accuracy()))
+log("\nCrafted Tree Confusion Matrix:\n{}"
+    .format(crafted_tree_test_confusion_matrix))
